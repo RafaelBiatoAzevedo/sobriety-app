@@ -1,29 +1,61 @@
-import { Link } from 'expo-router';
-import { StyleSheet } from 'react-native';
+import { Stack, useRouter } from "expo-router";
+import { useState } from "react";
+import { Alert } from "react-native";
+import {
+  ButtonCancel,
+  ButtonCancelText,
+  ButtonPrimary,
+  ButtonText,
+  Card,
+  Container,
+  Description,
+  Title,
+} from "./modal.styles";
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+export default function Modal() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-export default function ModalScreen() {
+  function handleRelapse() {
+    setLoading(true);
+
+    setTimeout(() => {
+      setLoading(false);
+
+      Alert.alert("Recaída registrada", "Você pode recomeçar agora 💪");
+
+      router.back();
+    }, 800);
+  }
+
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText type="title">This is a modal</ThemedText>
-      <Link href="/" dismissTo style={styles.link}>
-        <ThemedText type="link">Go to home screen</ThemedText>
-      </Link>
-    </ThemedView>
+    <>
+      <Stack.Screen
+        options={{
+          presentation: "modal",
+          title: "Registrar recaída",
+        }}
+      />
+
+      <Container>
+        <Card>
+          <Title>Você recaiu?</Title>
+
+          <Description>
+            Registrar uma recaída ajuda a manter seu progresso real e honesto.
+          </Description>
+
+          <ButtonPrimary onPress={handleRelapse} disabled={loading}>
+            <ButtonText>
+              {loading ? "Salvando..." : "Sim, registrar recaída"}
+            </ButtonText>
+          </ButtonPrimary>
+
+          <ButtonCancel onPress={() => router.back()}>
+            <ButtonCancelText>Cancelar</ButtonCancelText>
+          </ButtonCancel>
+        </Card>
+      </Container>
+    </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  link: {
-    marginTop: 15,
-    paddingVertical: 15,
-  },
-});
