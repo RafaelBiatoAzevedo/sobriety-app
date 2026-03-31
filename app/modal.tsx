@@ -1,3 +1,4 @@
+import { useSobriety } from "@/src/context/sobriety/SobrietyContext";
 import { Stack, useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert } from "react-native";
@@ -14,18 +15,24 @@ import {
 
 export default function Modal() {
   const router = useRouter();
+  const { registerRelapse } = useSobriety();
   const [loading, setLoading] = useState(false);
 
-  function handleRelapse() {
+  async function handleRelapse() {
     setLoading(true);
 
-    setTimeout(() => {
+    try {
+      await registerRelapse();
+
       setLoading(false);
 
       Alert.alert("Recaída registrada", "Você pode recomeçar agora 💪");
 
       router.back();
-    }, 800);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      Alert.alert("Recaída não registrada", "Tente novamente");
+    }
   }
 
   return (
