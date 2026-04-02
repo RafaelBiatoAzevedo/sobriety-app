@@ -1,12 +1,12 @@
 import "styled-components/native";
 
-declare module "styled-components" {
+declare module "styled-components/native" {
   export interface DefaultTheme {
     colors: {
-      background: string;
       primary: string;
+      background: string;
       text: string;
-      danger: string;
+      textSoft: string;
       card: string;
     };
   }

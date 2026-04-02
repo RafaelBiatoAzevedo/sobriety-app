@@ -14,7 +14,7 @@ import {
   ProgressBarFill,
   Subtitle,
   Title,
-} from "./milestones.styles";
+} from "../../src/styles/milestones.styles";
 
 export default function MilestonesScreen() {
   const { totalDays } = useSobriety();

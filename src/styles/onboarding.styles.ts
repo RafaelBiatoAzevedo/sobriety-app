@@ -46,8 +46,7 @@ export const Button = styled.TouchableOpacity<ButtonProps>`
 `;
 
 export const ButtonText = styled.Text`
-  color: #fff;
-  font-weight: bold;
+  color: #000;
 `;
 
 interface OptionProps {
@@ -57,7 +56,7 @@ interface OptionProps {
 export const ButtonDate = styled.TouchableOpacity`
   background-color: #fff;
   padding: 12px;
-  border-radius: 10px;
+  border-radius: 6px;
   margin-bottom: 12px;
 `;
 
@@ -78,7 +77,7 @@ export const OptionButton = styled.TouchableOpacity<OptionProps>`
 export const DropdownButton = styled.TouchableOpacity`
   background-color: #fff;
   padding: 12px;
-  border-radius: 10px;
+  border-radius: 6px;
   margin-bottom: 12px;
 `;
 

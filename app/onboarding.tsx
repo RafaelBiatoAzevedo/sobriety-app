@@ -1,10 +1,11 @@
-import { saveRelapseDate } from "@/src/storage/sobrietyStorage";
+import { addRelapse } from "@/src/storage/sobrietyStorage";
 import { saveUser } from "@/src/storage/userStorage";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 
 import { ADDICTION_OPTIONS } from "@/src/constants/addictionOptions";
+import { useSobriety } from "@/src/context/sobriety/SobrietyContext";
 import {
   Button,
   ButtonDate,
@@ -17,10 +18,11 @@ import {
   OptionsList,
   OptionText,
   Title,
-} from "./onboarding.styles";
+} from "../src/styles/onboarding.styles";
 
 export default function Onboarding() {
   const router = useRouter();
+  const { refresh } = useSobriety();
 
   const [name, setName] = useState("");
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -39,7 +41,9 @@ export default function Onboarding() {
       addiction: addiction,
     });
 
-    await saveRelapseDate(startDate.toISOString());
+    await addRelapse(startDate.toISOString());
+
+    await refresh();
 
     router.replace("/");
   }

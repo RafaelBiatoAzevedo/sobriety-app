@@ -11,7 +11,7 @@ import {
   Container,
   Description,
   Title,
-} from "./modal.styles";
+} from "../src/styles/modal.styles";
 
 export default function Modal() {
   const router = useRouter();
