@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getRelapseDate, saveRelapseDate } from "../../storage/sobrietyStorage";
-import { calculateSobrietyTime } from "../../utils/date";
+import { calculateSobrietyTime, calculateTotalDays } from "../../utils/date";
 
 interface SobrietyContextData {
   time: {
@@ -8,12 +8,15 @@ interface SobrietyContextData {
     months: number;
     days: number;
   };
+  totalDays: number;
   registerRelapse: () => Promise<void>;
 }
 
 const SobrietyContext = createContext({} as SobrietyContextData);
 
 export function SobrietyProvider({ children }: any) {
+  const [totalDays, setTotalDays] = useState(0);
+
   const [time, setTime] = useState({
     years: 0,
     months: 0,
@@ -23,6 +26,7 @@ export function SobrietyProvider({ children }: any) {
   async function load() {
     const stored = await getRelapseDate();
     setTime(calculateSobrietyTime(stored));
+    setTotalDays(calculateTotalDays(stored));
   }
 
   async function registerRelapse() {
@@ -40,7 +44,7 @@ export function SobrietyProvider({ children }: any) {
   }, []);
 
   return (
-    <SobrietyContext.Provider value={{ time, registerRelapse }}>
+    <SobrietyContext.Provider value={{ time, totalDays, registerRelapse }}>
       {children}
     </SobrietyContext.Provider>
   );

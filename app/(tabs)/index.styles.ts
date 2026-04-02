@@ -17,3 +17,9 @@ export const Subtitle = styled.Text`
   font-size: 32px;
   font-weight: bold;
 `;
+
+export const NextMilestoneText = styled.Text`
+  margin-top: 12px;
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.primary};
+`;

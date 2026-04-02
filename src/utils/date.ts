@@ -29,3 +29,14 @@ export function calculateSobrietyTime(date: string | null) {
 
   return { years, months, days };
 }
+
+export function calculateTotalDays(date: string | null): number {
+  if (!date) return 0;
+
+  const start = new Date(date);
+  const now = new Date();
+
+  const diff = now.getTime() - start.getTime();
+
+  return Math.floor(diff / (1000 * 60 * 60 * 24));
+}
