@@ -30,7 +30,7 @@ export const MILESTONES: Milestone[] = [
     title: "90 Dias",
     description:
       "Vermelho hora de parar e analisar como está sua vida, e agradecer por chegar aos 90 dias. Você não precisa mais ficar parado em um mar de isolamento e desespero.",
-    color: "#FF0000",
+    color: "#FF000080",
     days: 90,
   },
   {

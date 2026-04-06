@@ -34,11 +34,22 @@ export const Card = styled.View<CardProps>`
   opacity: ${({ unlocked }) => (unlocked ? 1 : 0.5)};
 `;
 
-export const CardTitle = styled.Text`
+export const IconContainer = styled.View`
+  width: 100%;
+  align-items: center;
+  margin-bottom: 4px;
+`;
+
+interface CardTitleProps {
+  color: string;
+}
+
+export const CardTitle = styled.Text<CardTitleProps>`
   text-align: center;
   font-size: 16px;
   font-weight: bold;
-  color: ${({ theme }) => theme.colors.text};
+  color: ${({ color }) => color};
+  margin-bottom: 10px;
 `;
 
 export const Description = styled.Text`

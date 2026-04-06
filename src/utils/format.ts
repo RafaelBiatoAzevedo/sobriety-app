@@ -16,5 +16,5 @@ export function formatPeriod(item: Interval) {
     ? new Date(item.endDate).toLocaleDateString()
     : "Hoje";
 
-  return `${start} → ${end}`;
+  return `${start} - ${end}`;
 }

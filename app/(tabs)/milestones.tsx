@@ -5,11 +5,13 @@ import {
   getUnlockedMilestones,
 } from "@/src/utils/milestones";
 
+import { Ionicons } from "@expo/vector-icons";
 import {
   Card,
   CardTitle,
   Container,
   Description,
+  IconContainer,
   ProgressBarContainer,
   ProgressBarFill,
   Subtitle,
@@ -29,7 +31,10 @@ export default function MilestonesScreen() {
         const progress = getMilestoneProgress(item.days, totalDays);
         return (
           <Card key={item.id} unlocked={item.unlocked}>
-            <CardTitle>{item.title}</CardTitle>
+            <IconContainer>
+              <Ionicons name={"trophy"} size={40} color={item.color} />
+            </IconContainer>
+            <CardTitle color={item.color}>{item.title}</CardTitle>
             <Description>{item.description}</Description>
 
             <Subtitle>
