@@ -5631,6 +5631,11 @@ react-native-screens@~4.16.0:
     react-native-is-edge-to-edge "^1.2.1"
     warn-once "^0.1.0"
 
+react-native-uuid@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/react-native-uuid/-/react-native-uuid-2.0.4.tgz#0c4f345523c5feac0282d3a51fe19887727df988"
+  integrity sha512-LSJNeh559qC17fgVPBsWuTSW/OygFp2dwTcf94IQBLYft5FzIQS9pCsuT36OPvyvDOMb6yiGr6TafaJDnz9PPQ==
+
 react-native-web@~0.21.0:
   version "0.21.2"
   resolved "https://registry.npmjs.org/react-native-web/-/react-native-web-0.21.2.tgz"

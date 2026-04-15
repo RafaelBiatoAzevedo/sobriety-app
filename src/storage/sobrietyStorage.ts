@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import uuid from "react-native-uuid";
 import { STORAGE_KEYS } from "../constants/storage";
 import { History } from "../interfaces/histoty";
 
@@ -6,45 +7,86 @@ export async function getCurrentSobriety(): Promise<string | null> {
   return await AsyncStorage.getItem(STORAGE_KEYS.CURRENT_SOBRIETY_START);
 }
 
-export async function getHistory(): Promise<History[] | []> {
-  const data = await AsyncStorage.getItem(STORAGE_KEYS.HISTORY);
+export async function getHistory(): Promise<History[]> {
+  try {
+    const data = await AsyncStorage.getItem(STORAGE_KEYS.HISTORY);
 
-  if (data) {
-    return JSON.parse(data);
+    return data ? JSON.parse(data) : [];
+  } catch (error) {
+    console.error("Erro ao buscar history:", error);
+    return [];
   }
-
-  // for add migrate
-  // const lastRelapse = await AsyncStorage.getItem(STORAGE_KEYS.LAST_RELAPSE);
-
-  // if (lastRelapse) {
-  //   const migrated = [{ date: lastRelapse }];
-
-  //   await AsyncStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(migrated));
-
-  //   return migrated;
-  // }
-
-  return [];
 }
 
-export async function addRelapse(startDate: string, endDate?: string) {
+export async function saveHistory(history: History[]) {
+  try {
+    await AsyncStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(history));
+  } catch (error) {
+    console.error("Erro ao salvar history:", error);
+  }
+}
+
+export async function addSobriety(startDate: string, endDate?: string) {
   const history = await getHistory();
 
-  // const exists = history.some((h) => h.date === date);
-
-  // if (exists) return;
-
-  const updated = [...history, { startDate, endDate }];
+  const updated = [
+    ...history,
+    {
+      id: uuid.v4().toString(),
+      startDate,
+      endDate,
+    },
+  ];
 
   const sorted = updated.sort(
     (a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime(),
   );
 
-  await AsyncStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(sorted));
+  await saveHistory(sorted);
 
   const latest = sorted[0]?.startDate;
 
   if (latest) {
     await AsyncStorage.setItem(STORAGE_KEYS.CURRENT_SOBRIETY_START, latest);
+  }
+}
+
+export async function editSobriety(
+  id: string,
+  startDate: string,
+  endDate?: string,
+) {
+  const history = await getHistory();
+
+  const updated = history.map((item) =>
+    item.id === id ? { ...item, startDate, endDate } : item,
+  );
+
+  const sorted = updated.sort(
+    (a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime(),
+  );
+
+  await saveHistory(sorted);
+
+  const latest = sorted[0]?.startDate;
+
+  if (latest) {
+    await AsyncStorage.setItem(STORAGE_KEYS.CURRENT_SOBRIETY_START, latest);
+  }
+}
+
+export async function deleteSobriety(id: string) {
+  const history = await getHistory();
+
+  const filtered = history.filter((item) => item.id !== id);
+
+  await saveHistory(filtered);
+
+  const latest = filtered[0]?.startDate;
+
+  if (latest) {
+    await AsyncStorage.setItem(STORAGE_KEYS.CURRENT_SOBRIETY_START, latest);
+  } else {
+    await AsyncStorage.removeItem(STORAGE_KEYS.CURRENT_SOBRIETY_START);
   }
 }

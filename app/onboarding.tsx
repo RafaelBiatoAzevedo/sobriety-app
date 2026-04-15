@@ -1,4 +1,4 @@
-import { addRelapse } from "@/src/storage/sobrietyStorage";
+import { addSobriety } from "@/src/storage/sobrietyStorage";
 import { saveUser } from "@/src/storage/userStorage";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRouter } from "expo-router";
@@ -41,7 +41,7 @@ export default function Onboarding() {
       addiction: addiction,
     });
 
-    await addRelapse(startDate.toISOString());
+    await addSobriety(startDate.toISOString());
 
     await refresh();
 

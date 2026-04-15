@@ -11,7 +11,6 @@ export const Overlay = styled.TouchableOpacity`
 `;
 
 export const Container = styled.View`
-  position: relative;
   flex: 1;
   height: 100%;
   padding: 40px 16px 16px 16px;
@@ -71,16 +70,16 @@ export const MenuButton = styled.TouchableOpacity`
 `;
 
 export const MenuContainer = styled.View`
-  position: absolute;
-  top: 35px;
-  right: 10px;
-
   background-color: #1e293b;
   border-radius: 8px;
   padding: 6px;
   z-index: 10;
 
-  elevation: 5;
+  elevation: 8;
+  shadow-color: #000;
+  shadow-offset: 0px 4px;
+  shadow-opacity: 0.25;
+  shadow-radius: 6px;
 `;
 
 export const MenuItem = styled.TouchableOpacity`
@@ -90,4 +89,15 @@ export const MenuItem = styled.TouchableOpacity`
 export const MenuText = styled.Text`
   color: #fff;
   font-size: 14px;
+`;
+
+export const ButtonText = styled.Text`
+  color: #000;
+`;
+
+export const ButtonDate = styled.TouchableOpacity`
+  background-color: #fff;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 12px;
 `;

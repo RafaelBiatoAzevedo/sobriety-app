@@ -28,14 +28,6 @@ export default function RootLayout() {
       <SobrietyProvider>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" />
-          <Stack.Screen
-            name="modal"
-            options={{
-              presentation: "modal",
-              headerShown: true,
-              title: "Registrar recaída",
-            }}
-          />
         </Stack>
       </SobrietyProvider>
     </ThemeProvider>
