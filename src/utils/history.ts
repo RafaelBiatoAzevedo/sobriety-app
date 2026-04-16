@@ -24,3 +24,24 @@ export function getBestStreak(intervals: Interval[]): number {
 
   return Math.max(...intervals.map((i) => i.daysClean));
 }
+
+export function hasOverlap(
+  newStart: Date,
+  newEnd: Date | null,
+  history: { id: string; startDate: string; endDate?: string }[],
+  ignoreId?: string,
+) {
+  const newStartTime = newStart.getTime();
+  const newEndTime = (newEnd || new Date()).getTime();
+
+  return history.some((item) => {
+    if (item.id === ignoreId) return false;
+
+    const start = new Date(item.startDate).getTime();
+    const end = item.endDate
+      ? new Date(item.endDate).getTime()
+      : new Date().getTime();
+
+    return newStartTime <= end && newEndTime >= start;
+  });
+}

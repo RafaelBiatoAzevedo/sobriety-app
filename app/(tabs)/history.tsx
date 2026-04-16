@@ -29,7 +29,11 @@ import { CustomModal } from "@/src/components/Modal";
 import { useSobriety } from "@/src/context/sobriety/SobrietyContext";
 import { Interval } from "@/src/interfaces/interval";
 import { formatPeriod } from "@/src/utils/format";
-import { calculateIntervals, getBestStreak } from "@/src/utils/history";
+import {
+  calculateIntervals,
+  getBestStreak,
+  hasOverlap,
+} from "@/src/utils/history";
 import { Ionicons } from "@expo/vector-icons";
 import { Alert, Dimensions } from "react-native";
 import { useTheme } from "styled-components/native";
@@ -141,13 +145,25 @@ export default function History() {
     try {
       setLoading(true);
 
+      const history = await getHistory();
+
       if (editingItem) {
+        if (hasOverlap(startDate, endDate, history, editingItem.id)) {
+          alert("⚠️ Esse período conflita com outro registro 😞");
+          return;
+        }
+
         await editSobriety(
           editingItem.id,
           startDate.toISOString(),
           endDate?.toISOString(),
         );
       } else {
+        if (hasOverlap(startDate, endDate, history)) {
+          alert("⚠️ Esse período conflita com outro registro 😞");
+          return;
+        }
+
         await addSobriety(startDate.toISOString(), endDate?.toISOString());
       }
 
