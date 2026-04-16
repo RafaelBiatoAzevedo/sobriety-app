@@ -5,7 +5,7 @@ import {
   getHistory,
 } from "@/src/storage/sobrietyStorage";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   AddButton,
@@ -26,6 +26,7 @@ import {
 } from "../../src/styles/history.styles";
 
 import { CustomModal } from "@/src/components/Modal";
+import { useSobriety } from "@/src/context/sobriety/SobrietyContext";
 import { Interval } from "@/src/interfaces/interval";
 import { formatPeriod } from "@/src/utils/format";
 import { calculateIntervals, getBestStreak } from "@/src/utils/history";
@@ -35,6 +36,7 @@ import { useTheme } from "styled-components/native";
 
 export default function History() {
   const { colors } = useTheme();
+  const { refresh } = useSobriety();
 
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<Interval[]>([]);
@@ -59,9 +61,6 @@ export default function History() {
   const [selectedItem, setSelectedItem] = useState<Interval | null>(null);
 
   const screenWidth = Dimensions.get("window").width;
-  const MENU_WIDTH = 100;
-
-  const adjustedX = Math.min(menuPosition.x, screenWidth - MENU_WIDTH - 10);
 
   useEffect(() => {
     async function load() {
@@ -98,6 +97,7 @@ export default function History() {
 
     setData(intervals);
     setBestStreak(getBestStreak(intervals));
+    await refresh();
   }
 
   function handleEdit(item: Interval) {
@@ -123,6 +123,7 @@ export default function History() {
           onPress: async () => {
             await deleteSobriety(item.id);
             await reload();
+            setOpenMenuIndex(null);
           },
         },
       ],
@@ -150,9 +151,8 @@ export default function History() {
         await addSobriety(startDate.toISOString(), endDate?.toISOString());
       }
 
-      await reload();
-
       handleClose();
+      await reload();
     } finally {
       setLoading(false);
     }
@@ -177,6 +177,29 @@ export default function History() {
     handleCloseRelapse();
   }
 
+  const widthMenu: number = useMemo(() => {
+    const size = selectedItem?.endDate ? 100 : 160;
+    const adjustedX = Math.min(menuPosition.x, screenWidth - size - 10);
+
+    return adjustedX;
+  }, [menuPosition.x, screenWidth, selectedItem?.endDate]);
+
+  const isNewJourney = useMemo(() => {
+    const hasNoData = data.length === 0;
+    const hasNoActiveInterval = data.every((i) => i.endDate);
+
+    return hasNoData || hasNoActiveInterval;
+  }, [data]);
+
+  const enabledEndDate = useMemo(() => {
+    const isEditing = !!editingItem;
+    const hasEndDate = !!endDate;
+
+    const canEditEndDate = isEditing ? hasEndDate : true;
+
+    return canEditEndDate && !isNewJourney;
+  }, [editingItem, endDate, isNewJourney]);
+
   function handleRelapse(item: Interval) {
     setEditingItem(item);
     setShowRelapseModal(true);
@@ -187,12 +210,14 @@ export default function History() {
     setStartDate(null);
     setEndDate(null);
     setShowModal(false);
+    setOpenMenuIndex(null);
   }
 
   function handleCloseRelapse() {
     setEditingItem(null);
     setRelapseDate(null);
     setShowRelapseModal(false);
+    setOpenMenuIndex(null);
   }
 
   return (
@@ -227,10 +252,16 @@ export default function History() {
           visible={showModal}
           onClose={handleClose}
           onConfirm={handleAddInterval}
-          disableConfirm={!startDate || !endDate}
+          disableConfirm={!startDate || (enabledEndDate && !endDate)}
           loading={loading}
         >
-          <Title>{editingItem ? "Editar registro" : "Novo registro"}</Title>
+          <Title>
+            {isNewJourney
+              ? "👏 Parabéns!\nVamos iniciar uma nova jornada"
+              : editingItem
+                ? "Editar registro"
+                : "Novo registro"}
+          </Title>
 
           <ButtonDate onPress={() => setShowStartPicker(true)}>
             <ButtonText>
@@ -238,7 +269,7 @@ export default function History() {
             </ButtonText>
           </ButtonDate>
 
-          {((editingItem && endDate) || !editingItem) && (
+          {enabledEndDate && (
             <ButtonDate onPress={() => setShowEndPicker(true)}>
               <ButtonText>
                 {endDate ? endDate.toLocaleDateString() : "Selecionar fim"}
@@ -250,8 +281,14 @@ export default function History() {
           <DateTimePicker
             value={startDate || new Date()}
             mode="date"
+            maximumDate={new Date()}
             onChange={(event, selectedDate) => {
               setShowStartPicker(false);
+
+              if (selectedDate && selectedDate > new Date()) {
+                alert("⚠️ Não é possível selecionar uma data futura 😅");
+                return;
+              }
 
               if (event.type === "dismissed") return;
 
@@ -266,8 +303,13 @@ export default function History() {
           <DateTimePicker
             value={endDate || new Date()}
             mode="date"
+            maximumDate={new Date()}
             onChange={(event, selectedDate) => {
               setShowEndPicker(false);
+              if (selectedDate && selectedDate > new Date()) {
+                alert("⚠️ Não é possível selecionar uma data futura 😅");
+                return;
+              }
 
               if (event.type === "dismissed") return;
 
@@ -300,8 +342,14 @@ export default function History() {
           <DateTimePicker
             value={relapseDate || new Date()}
             mode="date"
+            maximumDate={new Date()}
             onChange={(event, selectedDate) => {
               setShowRelapsePicker(false);
+
+              if (selectedDate && selectedDate > new Date()) {
+                alert("⚠️ Não é possível selecionar uma data futura 😅");
+                return;
+              }
 
               if (event.type === "dismissed") return;
 
@@ -320,7 +368,7 @@ export default function History() {
             style={{
               position: "absolute",
               top: menuPosition.y,
-              left: adjustedX,
+              left: widthMenu,
             }}
           >
             <MenuItem onPress={() => selectedItem && handleEdit(selectedItem)}>

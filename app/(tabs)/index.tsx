@@ -16,8 +16,7 @@ import {
 } from "../../src/styles/index.styles";
 
 export default function Home() {
-  const { time } = useSobriety();
-  const { totalDays } = useSobriety();
+  const { totalDays, time, refresh } = useSobriety();
 
   const nextMilestone = getNextMilestone(MILESTONES, totalDays);
   const daysLeft = getDaysToNextMilestone(nextMilestone, totalDays);
@@ -27,6 +26,7 @@ export default function Home() {
     async function load() {
       const data = await getUser();
       setUser(data);
+      await refresh();
     }
 
     load();
